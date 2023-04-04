@@ -1,0 +1,7 @@
+node_modules
+.pnp
+.pnp.js
+.vscode 
+build
+.DS_Store
+.env
