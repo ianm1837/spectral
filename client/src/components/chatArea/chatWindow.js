@@ -1,7 +1,32 @@
-export default function ChatWindow() {
+import MessageInput from "./MessageInput";
+import BubbleContainer from "./BubbleContainer";
+import React, { useState } from "react";
+
+export default function ChatWindow(props) {
+
+  const [ messages, setMessages ] = useState ([]);
+
+
+
+  function sendFunction ( message, username, status ) {
+
+    setMessages ( [...messages, {message, username, status}] );
+    
+    console.log ( messages );
+  }
+  
+
   return (
     <>
-      <div className={`w-full h-full bg-base-100`}>Hi</div>
+      <BubbleContainer 
+        messages = { messages }
+      />
+
+      <MessageInput 
+        sendFunction = { sendFunction }
+      />
     </>
   );
 }
+
+

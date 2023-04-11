@@ -1,7 +1,6 @@
-import ChatWindow from '../components/chatArea/chatWindow';
+import ChatWindow from '../components/chatArea/ChatWindow';
 import Navbar from '../components/navbar/navbar';
 import Drawer from '../components/drawer/Drawer';
-import DrawerToggle from '../components/navbar/drawerToggle';
 import DrawerContent from '../components/drawer/DrawerContent';
 import ProfileButton from '../components/navbar/profileButton';
 import DrawerSide from '../components/drawer/DrawerSide';
@@ -16,7 +15,6 @@ export default function Home(props) {
           <Navbar title={props.title}>
             <ProfileButton />
           </Navbar>
-
 
           <ChatWindow />
 
