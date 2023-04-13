@@ -1,39 +1,100 @@
-const express = require('express')
-const path = require('path')
-const db = require('.config/connection')
-const routes = require('./routes')
-const { typeDefs, resolvers } = require('./schemas')
-require('dotenv').config()
+import express from 'express'
+import dotenv from 'dotenv'
+dotenv.config()
 
-const PORT = process.env.PORT
+// node dependencies
+import path from 'path'
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-});
+// db connection
+import db from './config/connection.js'
+
+// my own dependencies
+import { typeDefs, resolvers } from './schemas/index.js'
+// import { signToken } from './utils/auth.js'
+
+// apollo dependencies
+import { ApolloServer } from '@apollo/server'
+import { expressMiddleware } from '@apollo/server/express4'
+import bodyParser from 'body-parser';
+import cors from 'cors'
+
+// apollo websocket deps
+import { createServer } from 'http';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+// import { greaphQLWsLink } from '@apollo/client/link/subscriptions'
+import { createClient } from 'graphql-ws'
+
+// not sure what this is for yet
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { WebSocketServer } from 'ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
+
+// create executable schema for websocket server
+const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 const app = express()
+const httpServer = createServer(app);
 
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+// create websocket server
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: '/graphql',
+});
 
+// save retturn value of useServer to close it later
+const serverCleanup = useServer({ schema }, wsServer);
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/build')));
-}
+// setup apollo server
+const server = new ApolloServer({
+  schema,
+  plugins: [
+    // proper shutdown for http server
+    ApolloServerPluginDrainHttpServer({ httpServer }),
 
-// Create a new instance of an Apollo server with the GraphQL schema
-const startApolloServer = async () => {
-  await server.start();
-  server.applyMiddleware({ app });
-  
-  db.once('open', () => {
-    app.listen(PORT, () => {
-      console.log(`API server running on port ${PORT}!`);
-      console.log(`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`);
-    })
+    // proper shutdown for websocket server
+    {
+      async serverWillStart() {
+        return {
+          async drainServer() {
+            serverCleanup.dispose();
+          },
+        };
+      },
+    },
+  ]
+});
+
+// start apollo server
+await server.start();
+
+// set cors options
+const corsOptions = {
+  origin: '*',
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
+// set environment variables
+const PORT = process.env.PORT
+const env = process.env.NODE_ENV || 'development'
+
+// setup middleware
+app.use(
+  '/',
+  bodyParser.urlencoded({ extended: false }),
+  cors(corsOptions),
+  bodyParser.json(),
+  expressMiddleware(server),
+);
+
+// serve up static assets if in production
+if (env === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/build')))
+}  
+
+// connect to db and start listening for requests
+db.once('open', () => {
+  httpServer.listen(PORT, () => {
+    console.log(`Use GraphQL at http://localhost:${PORT}/graphql`);
   })
-  };
-  
-// Call the async function to start the server
-  startApolloServer(typeDefs, resolvers);
+})

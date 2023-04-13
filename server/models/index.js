@@ -1,5 +1,5 @@
-const User = require('./User');
-const Message = require('./Message');
-const ChatRoom = require('./ChatRoom');
+import User from'./User.js'
+import ChatRoom from './ChatRoom.js'
+import Message from'./Message.js'
 
-module.exports = { User, Message, ChatRoom };
+export { User, ChatRoom, Message };
