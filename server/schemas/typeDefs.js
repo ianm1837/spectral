@@ -12,7 +12,7 @@ const typeDefs = `#graphql
 
   type ChatRoom {
     _id: ID
-    room_name: String
+    name: String
     users: [User]
     messages: [Message]
   }
@@ -43,7 +43,7 @@ const typeDefs = `#graphql
   type Mutation {
     addUser(username: String!, password: String!): Auth
     login(username: String!, password: String!): Auth
-    addChatRoom(room_name: String!): ChatRoom
+    addChatRoom(name: String!): ChatRoom
     addMessage(message_text: String!, chat_room: ID!): Message
     updateLastMessageTime(last_message_time: String!): User
     updateTotalMessages(total_messages: Int!): User
@@ -53,7 +53,8 @@ const typeDefs = `#graphql
 
   type Subscription {
     newMessage: Message
-    newChatRoom: ChatRoom
+    chatRoom: [ChatRoom!]
+    testSubscription: String
   }
 `;
 

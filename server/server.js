@@ -10,7 +10,7 @@ import db from './config/connection.js'
 
 // my own dependencies
 import { typeDefs, resolvers } from './schemas/index.js'
-// import { signToken } from './utils/auth.js'
+import authMiddleware from './utils/auth.js'
 
 // apollo dependencies
 import { ApolloServer } from '@apollo/server'
@@ -21,6 +21,7 @@ import cors from 'cors'
 // apollo websocket deps
 import { createServer } from 'http';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import { PubSub } from 'graphql-subscriptions'
 // import { greaphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
 
@@ -43,6 +44,11 @@ const wsServer = new WebSocketServer({
 
 // save retturn value of useServer to close it later
 const serverCleanup = useServer({ schema }, wsServer);
+
+const pubsub = new PubSub();
+
+
+
 
 // setup apollo server
 const server = new ApolloServer({
@@ -84,7 +90,13 @@ app.use(
   bodyParser.urlencoded({ extended: false }),
   cors(corsOptions),
   bodyParser.json(),
-  expressMiddleware(server),
+  expressMiddleware(server, {
+    // context: ({ req, res }) => ({ req, res, authMiddleware, pubsub }),
+    context: ({ req, res }) => { 
+      const modifiedReq = authMiddleware(req)
+      return {req: modifiedReq, res, pubsub }
+    },
+  }),
 );
 
 // serve up static assets if in production
