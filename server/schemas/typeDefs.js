@@ -17,12 +17,21 @@ const typeDefs = `#graphql
     messages: [Message]
   }
 
+  type RoomSubscription {
+    _id: ID
+    name: String
+    message_text: String
+  }
+
   type Message {
     _id: ID
     message_text: String
     message_time: String
     user: User
-    chat_room: ChatRoom
+  }
+
+  type testMessage {
+    message_text: String
   }
 
   type Auth {
@@ -32,29 +41,22 @@ const typeDefs = `#graphql
 
   type Query {
     me: User
-    users: [User]
-    user(username: String!): User
-    chat_rooms: [ChatRoom]
-    chat_room(room_name: String!): ChatRoom
-    messages: [Message]
-    message(_id: ID!): Message
+    getAllUsers: [User]
+    getUser(username: String!): User
+    getAllChatRooms: [ChatRoom]
+    getChatRoom(chatRoomId: ID!): ChatRoom
   }
 
   type Mutation {
-    addUser(username: String!, password: String!): Auth
+    createUser(username: String!, password: String!): Auth
     login(username: String!, password: String!): Auth
+    addUserToRoom(chatRoomId: ID!, user_id: String!): ChatRoom
     addChatRoom(name: String!): ChatRoom
-    addMessage(message_text: String!, chat_room: ID!): Message
-    updateLastMessageTime(last_message_time: String!): User
-    updateTotalMessages(total_messages: Int!): User
-    updateLastOpenRoom(last_open_room: ID!): User
-    updateTheme(theme: String!): User
+    postMessage(message_text: String!, chat_room: String!): Message
   }
 
   type Subscription {
-    newMessage: Message
-    chatRoom: [ChatRoom!]
-    testSubscription: String
+    subscribeToRoom(chat_room: String!): Message
   }
 `;
 

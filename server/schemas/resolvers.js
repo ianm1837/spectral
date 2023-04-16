@@ -1,10 +1,9 @@
 import { GraphQLError } from 'graphql';
 import { User, ChatRoom, Message } from '../models/index.js';
 import { signToken } from '../utils/auth.js';
+import { PubSub } from 'graphql-subscriptions';
 
-const onChatRoomUpdates = (fn) => {
-  console.log("onChatRoomUpdates")
-}
+const pubsub = new PubSub();
 
 const resolvers = {
   Query: {
@@ -18,23 +17,31 @@ const resolvers = {
       }
       throw new GraphQLError('Not logged in');
     },
-    users: async () => {
+    getAllUsers: async () => {
       return User.find()
         .select('-__v -password')
         .populate('chat_rooms')
         .populate('last_open_room');
     },
-    chat_rooms: async (parent, { username }) => {
-      const params = username ? { name: username } : {};
-      return ChatRoom.find(params).sort({ createdAt: desc });
+    getUser: async (parent, { username }) => {
+      return User.find({ username })
+        .select('-__v -password')
+        .populate('chat_rooms')
+        .populate('last_open_room');
     },
-    messages: async (parent, { chatRoomId }) => {
-      const params = chatRoomId ? { chatRoomId } : {};
-      return Message.find(params).sort({ createdAt: desc });
+    getAllChatRooms: async () => {
+      return await ChatRoom.find({}).populate('users')
+    },
+    getChatRoom: async (parent, { chatRoomId }) => {
+      const newData = await ChatRoom.findOne({ _id: chatRoomId }).populate('users').populate('messages')
+
+      console.log("newData", newData)
+      
+      return  { name: newData.name, users: newData.users, messages: newData.messages }
     },
   },
   Mutation: {
-    addUser: async (parent, args) => {
+    createUser: async (parent, args) => {
       const user = await User.create(args);
       const token = signToken(user);
       return { token, user };
@@ -51,8 +58,23 @@ const resolvers = {
       const token = signToken(user);
       return { token, user };
     },
+    addUserToRoom: async (parent, args, context) => {
+      if (context.req.user) {
+        const chatRoom = await ChatRoom.findByIdAndUpdate(
+          { _id: args.chatRoomId },
+          { $push: { users: args.user_id } },
+          { new: true }
+        );
+        const user = await User.findByIdAndUpdate(
+          { _id: args.user_id },
+          { $push: { chat_rooms: args.chatRoomId } },
+          { new: true }
+        );
+        return chatRoom;
+      }
+      throw new GraphQLError('Not logged in');
+    },
     addChatRoom: async (parent, args, context) => {
-      console.log("args: ", args)
       if (context.req.user) {
         const chatRoom = await ChatRoom.create({ ...args, users: [context.req.user._id] });
         await User.findByIdAndUpdate(
@@ -63,26 +85,44 @@ const resolvers = {
         return chatRoom;
       }
       throw new GraphQLError('Not logged in');
+    },
+    postMessage: async (parent, args, context) => {
+      // check if user has valid token (logged in)
+      if (context.req.user) {
+        // create new message
+        const newMessage = await Message.create({ 
+          message: args.message_text, 
+          user: context.req.user._id, 
+          chat_room: args.chat_room 
+        })
+        
+        const updatedRoom = await ChatRoom.findByIdAndUpdate(
+          { _id: args.chat_room },
+          { $push: { messages: newMessage.id } },
+          { new: true }
+        )
+
+        //broadcast new message to all subscribers
+        pubsub.publish(args.chat_room, { 
+          subscribeToRoom: { 
+            _id: newMessage.id, 
+            message_text: args.message_text, 
+            user: context.req.user, 
+            message_time: newMessage.created_at 
+          }})
+        return newMessage
+      }
+      // if user is not logged in, throw error
+      throw new GraphQLError('Not logged in');
     }
   },
   Subscription: {
-    chatRoom: {
-      subscribe: () => pubsub.asyncIterator('NEW_CHAT_ROOM')
-    },
-    newMessage: {
-      subscribe: (parent, args, { pubsub }) => {
-        pubsub.asyncIterator('NEW_MESSAGE')
+    subscribeToRoom: {
+      subscribe: (_, __, context) => {
+        return pubsub.asyncIterator(context.args.variableValues.chatRoom)
       }
     },
-    // testSubscription: {
-    //   subscribe: (parent, args, context) => {
-    //     console.log(context)
-    //     // pubsub.asyncIterator('TEST_SUBSCRIPTION')
-    //   }
-    // },
   },
 }
-
-
 
 export default resolvers;

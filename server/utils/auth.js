@@ -6,7 +6,6 @@ const expiration = '48hr';
 
 const authMiddleware = function (req) {
 
-  // console.log("req", req)
   let token = req.body.token || req.query.token || req.headers.authorization;
 
   if (req.headers.authorization) {
@@ -19,11 +18,11 @@ const authMiddleware = function (req) {
 
   try {
     const { data } = jwt.verify(token, secret, { maxAge: expiration });
-    // console.log(data)
+
     req.user = data;
 
   } catch {
-    console.log('Invalid token');
+    console.warn('Invalid token');
   }
 
   return req;

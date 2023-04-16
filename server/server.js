@@ -22,8 +22,6 @@ import cors from 'cors'
 import { createServer } from 'http';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { PubSub } from 'graphql-subscriptions'
-// import { greaphQLWsLink } from '@apollo/client/link/subscriptions'
-import { createClient } from 'graphql-ws'
 
 // not sure what this is for yet
 import { makeExecutableSchema } from '@graphql-tools/schema';
@@ -43,12 +41,12 @@ const wsServer = new WebSocketServer({
 });
 
 // save retturn value of useServer to close it later
-const serverCleanup = useServer({ schema }, wsServer);
-
-const pubsub = new PubSub();
-
-
-
+const serverCleanup = useServer({ 
+  schema,
+  context: async (ctx, msg, args) => {
+    return { ctx, msg, args }
+  },
+}, wsServer);
 
 // setup apollo server
 const server = new ApolloServer({
@@ -75,7 +73,7 @@ await server.start();
 
 // set cors options
 const corsOptions = {
-  origin: '*',
+  origin: '*', // update to match the domain you will make the request from
   credentials: true,
   optionsSuccessStatus: 200,
 };
@@ -94,7 +92,7 @@ app.use(
     // context: ({ req, res }) => ({ req, res, authMiddleware, pubsub }),
     context: ({ req, res }) => { 
       const modifiedReq = authMiddleware(req)
-      return {req: modifiedReq, res, pubsub }
+      return {req: modifiedReq, res }
     },
   }),
 );
@@ -107,6 +105,6 @@ if (env === 'production') {
 // connect to db and start listening for requests
 db.once('open', () => {
   httpServer.listen(PORT, () => {
-    console.log(`Use GraphQL at http://localhost:${PORT}/graphql`);
+    console.info(`Use GraphQL at http://localhost:${PORT}/graphql`);
   })
 })
