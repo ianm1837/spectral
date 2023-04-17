@@ -49,7 +49,7 @@ export default function Login() {
         <input name="password" value={passwordField} type="password" placeholder="Password" onChange={handleInputChange} onKeyUp={handleInputChange} className="input input-bordered input-secondary w-full max-w-xs" />
 
         <div className="card-actions flex flex-row justify-between items-center">
-          <button onClick={GetLoginToken} className="btn btn-primary">Login</button>
+          <button onClick={GetLoginToken} className="btn btn-primary">Create Account</button>
           <a href="/login" className="link link-secondary">Login Instead</a>
         </div>
       </div>

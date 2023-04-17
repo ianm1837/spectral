@@ -1,27 +1,45 @@
 # self-hosted-messaging
 
-requirements:
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Use React for the front end.
+## Description
 
-Use GraphQL with a Node.js and Express.js server.
+A messaging app that you can host how you want, where you want.
 
-Use MongoDB and the Mongoose ODM for the database.
+## Table of Contents
 
-Use queries and mutations for retrieving, adding, updating, and deleting data.
+- [self-hosted-messaging](#self-hosted-messaging)
+  - [Description](#description)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [License](#license)
+  - [Contributing](#contributing)
+  - [Questions](#questions)
 
-Be deployed using Heroku (with data).
+## Installation
 
-Have a polished UI.
+- Clone the repo
+- rename .env.EXAMPLE to .env and update the database url
+- run `npm install`
+- run `npm run build`
+- run `npm run start`
 
-Be responsive.
+## Usage
 
-Be interactive (i.e., accept and respond to user input).
+Once running, visit the page at localhost:3000 and enjoy
 
-Include authentication (JWT).
+## License
 
-Protect sensitive API key information on the server.
+Licensed under the MIT license.
+https://opensource.org/licenses/MIT
 
-Have a clean repository that meets quality coding standards (file structure, naming conventions, best practices for class and id naming conventions, indentation, high-quality comments, and so on).
+## Contributing
 
-Have a high-quality README (with unique name, description, technologies used, screenshot, and link to deployed application).
+no contribution currently allowed on this repo
+
+## Questions
+
+For questions please email: ian@iwm.dev
+
+Visit my github: [ianm1837](https://www.github.com/ianm1837)
