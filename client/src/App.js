@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import Home from "./pages/home";
 import Login from "./pages/login";
+import Signup from "./pages/signup";
 import { useState } from "react";
 import { Routes, Route, Outlet, Link, Navigate } from "react-router-dom";
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/" element={isLoggedIn ? <Home title={'Self-hosted Messaging'}/> : <Navigate replace to={"/login"} />} />
         <Route path="/" element={<Login />}/>
         <Route path="/login" element={isLoggedIn ? <Navigate replace to={"/"} /> : <Login />} /> 
+        <Route path="/signup" element={isLoggedIn ? <Navigate replace to={"/"} /> : <Signup />} />
         <Route path="*" element={<Navigate replace to={"/"} />} />
       </Routes> 
   );

@@ -50,7 +50,7 @@ export default function Login() {
 
         <div className="card-actions flex flex-row justify-between items-center">
           <button onClick={GetLoginToken} className="btn btn-primary">Login</button>
-          <a className="link link-secondary">Sign up</a>
+          <a href="/signup" className="link link-secondary">Sign up</a>
         </div>
       </div>
     </div>
