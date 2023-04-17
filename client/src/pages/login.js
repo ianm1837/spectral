@@ -44,7 +44,7 @@ export default function Login() {
   <div className="flex justify-center items-center h-full">
     <div className="card h-min w-96 bg-base-100 shadow-xl">
       <div className="card-body">
-        <h2 className="card-title">Login!</h2>
+        <h2 className="card-title">Login</h2>
         <input name="username" value={usernameField} type="text" placeholder="Username" onChange={handleInputChange} className="input input-bordered input-secondary w-full max-w-xs" />
         <input name="password" value={passwordField} type="password" placeholder="Password" onChange={handleInputChange} onKeyUp={handleInputChange} className="input input-bordered input-secondary w-full max-w-xs" />
 

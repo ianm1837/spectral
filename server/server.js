@@ -4,6 +4,7 @@ dotenv.config()
 
 // node dependencies
 import path from 'path'
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 // db connection
 import db from './config/connection.js'
@@ -82,6 +83,10 @@ const corsOptions = {
 const PORT = process.env.PORT
 const env = process.env.NODE_ENV || 'development'
 
+// serve up static assets if in production
+if (env === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/build')))
+}  
 // setup middleware
 app.use(
   '/',
@@ -97,10 +102,6 @@ app.use(
   }),
 );
 
-// serve up static assets if in production
-if (env === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/build')))
-}  
 
 // connect to db and start listening for requests
 db.once('open', () => {
