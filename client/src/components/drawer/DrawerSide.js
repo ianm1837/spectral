@@ -1,10 +1,10 @@
 export default function DrawerSide(props) {
   return (  
-    <div className="drawer-side  ">
+    <div className="drawer-side h-full">
       <label htmlFor="my-drawer-3" className="drawer-overlay"></label> 
-      <ul className="menu w-screen lg:w-96 bg-base-200">
+      <div className="menu relative h-full w-screen lg:w-96 bg-base-200">
         {props.children}
-      </ul>
+      </div>
       
     </div>
   );

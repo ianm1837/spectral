@@ -14,12 +14,17 @@ const userSchema = new Schema({
     minlength: 8,
     trim: true
   },
-  chat_rooms: [
-    {
+  chat_rooms: [{
+    room_name: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    chat_room: {
       type: Schema.Types.ObjectId,
       ref: 'ChatRoom'
     }
-  ],
+  }],
   last_message_time: {
     type: Date,
     default: null

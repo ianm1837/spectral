@@ -13,6 +13,7 @@ const resolvers = {
           .select('-__v -password')
           .populate('chat_rooms')
           .populate('last_open_room');
+
         return userData;
       }
       throw new GraphQLError('Not logged in');
@@ -48,49 +49,99 @@ const resolvers = {
     },
     login: async (parent, { username, password }) => {
       const user = await User.findOne({ username });
+
       if (!user) {
         throw new GraphQLError('Incorrect credentials');
       }
       const correctPw = await user.isCorrectPassword(password);
+
       if (!correctPw) {
         throw new GraphQLError('Incorrect credentials');
       }
       const token = signToken(user);
       return { token, user };
     },
+    changePassword: async (parent, args, context) => {
+      if (context.req.user) {
+        // Find the user document by ID and password
+        const user = await User.findOne({
+          _id: context.req.user._id
+        });
+        const correctPw = await user.isCorrectPassword(args.oldPassword);
+
+        if (!correctPw) {
+          throw new GraphQLError('Invalid old password');
+        }
+
+        // Update the password field with the new password
+        user.password = args.newPassword;
+        const updatedUser = await user.save();
+
+        return updatedUser ;
+      }
+
+      throw new GraphQLError('Not logged in');
+    },
     addUserToRoom: async (parent, args, context) => {
       if (context.req.user) {
-        const chatRoom = await ChatRoom.findByIdAndUpdate(
-          { _id: args.chatRoomId },
-          { $push: { users: args.user_id } },
-          { new: true }
-        );
         const user = await User.findByIdAndUpdate(
-          { _id: args.user_id },
-          { $push: { chat_rooms: args.chatRoomId } },
+          { _id: context.req.user._id },
+          { $push: { chat_rooms: {room_name: args.roomName, chat_room: args.chatRoomId } } },
           { new: true }
         );
-        return chatRoom;
+        return { _id: user._id };
       }
       throw new GraphQLError('Not logged in');
     },
     addChatRoom: async (parent, args, context) => {
       if (context.req.user) {
-        const chatRoom = await ChatRoom.create({ ...args, users: [context.req.user._id] });
-        await User.findByIdAndUpdate(
+        const chatRoom = await ChatRoom.create({ users: [context.req.user._id] });
+        const updatedUser = await User.findByIdAndUpdate(
           { _id: context.req.user._id },
-          { $push: { chat_rooms: chatRoom._id } },
+          { $push: { chat_rooms: {room_name: args.name, chat_room: chatRoom._id }} },
           { new: true }
         );
-        return chatRoom;
+
+        return { _id: chatRoom._id };
       }
+      else{
+        throw new GraphQLError('Not logged in')
+      }
+    },
+    renameChatRoom: async (parent, args, context) => {
+      if (context.req.user) {
+
+        const updatedUser = await User.findOneAndUpdate(
+          {
+            _id: context.req.user._id,
+            'chat_rooms.chat_room': args.chatRoomId,
+          },
+          { $set: { 'chat_rooms.$.room_name': args.name } },
+          { new: true },
+        );
+
+        return updatedUser;
+      }
+
+      throw new GraphQLError('Not logged in');
+    },
+    deleteChatRoom: async (parent, args, context) => {
+      if (context.req.user) {
+        const updatedUser = await User.findByIdAndUpdate(
+          context.req.user._id,
+          { $pull: { chat_rooms: { chat_room: args.chatRoomId } } },
+          { new: true },
+        );
+
+        return updatedUser;
+      }
+
       throw new GraphQLError('Not logged in');
     },
     postMessage: async (parent, args, context) => {
       // check if user has valid token (logged in)
       if (context.req.user) {
         // create new message
-        console.log("user: ", context.req.user)
         const newMessage = await Message.create({ 
           message: args.message_text, 
           user: context.req.user._id, 
@@ -115,7 +166,7 @@ const resolvers = {
       }
       // if user is not logged in, throw error
       throw new GraphQLError('Not logged in');
-    }
+    },
   },
   Subscription: {
     subscribeToRoom: {

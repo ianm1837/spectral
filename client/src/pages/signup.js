@@ -34,8 +34,6 @@ export default function Login() {
 
     const signupData = await createAccount({ variables: {username: usernameField, password: passwordField}})
 
-    console.log(signupData)
-
     const tokenData = signupData.data.createUser.token;
 
     // use the AuthService to log in the user and redirect to the homepage

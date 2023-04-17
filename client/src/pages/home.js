@@ -6,6 +6,15 @@ import ProfileButton from '../components/navbar/profileButton';
 import DrawerSide from '../components/drawer/DrawerSide';
 import DrawerNavbar from '../components/drawer/DrawerNavbar';
 import RoomCard from '../components/drawer/RoomCard';
+import MessageOptions from '../components/navbar/messageOptions'
+import CreateRoomModal from '../components/modals/CreateRoom';
+import InviteUserModal from '../components/modals/InviteUser';
+import ProfileModal from '../components/modals/Profile';
+import SettingsModal from '../components/modals/Settings';
+import RenameRoomModal from '../components/modals/RenameRoom';
+import LeaveRoomModal from '../components/modals/LeaveRoom';
+import JoinRoomModal from '../components/modals/JoinRoom';
+
 import { useEffect, useState, useRef } from 'react';
 
 import { useQuery, useLazyQuery, useSubscription, useMutation } from '@apollo/client';
@@ -20,10 +29,17 @@ export default function Home(props) {
   const [ messages, setMessages ] = useState ([]);
   const [ currentRoom, setCurrentRoom ] = useState ('');
   const [ isChecked, setIsChecked ] = useState (false);
+  const [ roomEditName, setRoomEditName ] = useState ('');
+  const [ updateRoomStatus, setUpdateRoomStatus ] = useState (false);
+
+  // useEffect ( () => {
+  //   console.log('roomEditName: ', roomEditName)
+  // }, [roomEditName])
 
   const toggleCheckbox = () => {
     setIsChecked(!isChecked);
   }
+  
   
 
   // listen for the room to change and set the messages
@@ -34,13 +50,17 @@ export default function Home(props) {
         setMessages(getMessages.data.getChatRoom.messages? getMessages.data.getChatRoom.messages : [] );
       }
       catch (err) {
-        console.log('no room selected')
+        console.info('no room selected')
       }
     }
     nothing();
   }, [currentRoom])
   
   useEffect ( () => {}, [messages])
+
+  useEffect ( () => {
+    meObj.refetch();
+  }, [updateRoomStatus])
   
   // apollo queries
   const meObj = useQuery(ME);
@@ -74,8 +94,6 @@ export default function Home(props) {
       if(chatRoomSubscription.data.subscribeToRoom.user.username === meObj.data.me.username) {
         return;
       }
-
-      console.log(chatRoomSubscription.data.subscribeToRoom)
       setMessages ( [...messages, chatRoomSubscription.data.subscribeToRoom] );
     }
   }, [chatRoomSubscription])
@@ -116,17 +134,25 @@ export default function Home(props) {
         </DrawerContent>
         <DrawerSide>
           <DrawerNavbar title={props.title}>
-
+            <MessageOptions />
           </DrawerNavbar>
           {meObj.data.me.chat_rooms.map((room) => {
             return (
-              <RoomCard key={room._id} roomId={room._id} image={avatarImage} roomName={room.name} handleClick={HandleRoomChange}/>
+              <RoomCard key={room.chat_room} roomId={room.chat_room} image={avatarImage} roomName={room.room_name} editRoomFunction={setRoomEditName} handleClick={HandleRoomChange}/>
             )
           }
           )}
+          
 
         </DrawerSide>
       </Drawer>
+      <CreateRoomModal setUpdateRoomStatus={setUpdateRoomStatus} updateRoomStatus={updateRoomStatus} />
+      <InviteUserModal roomName={roomEditName} setUpdateRoomStatus={setUpdateRoomStatus} updateRoomStatus={updateRoomStatus} />
+      <SettingsModal />
+      <RenameRoomModal roomName={roomEditName} setUpdateRoomStatus={setUpdateRoomStatus} updateRoomStatus={updateRoomStatus}/>
+      <LeaveRoomModal roomName={roomEditName} setUpdateRoomStatus={setUpdateRoomStatus} updateRoomStatus={updateRoomStatus}/>
+      <JoinRoomModal setUpdateRoomStatus={setUpdateRoomStatus} updateRoomStatus={updateRoomStatus}/>
+
 
     </>
   );

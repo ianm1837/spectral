@@ -17,17 +17,26 @@ mutation Login($username: String!, $password: String!) {
     token
     user {
       _id
-      chat_rooms {
-        _id
-        name
-      }
       username
-      total_messages
-      theme
+      chat_rooms {
+        chat_room
+        room_name
+      }
       last_open_room {
         _id
-        name
       }
+      last_message_time
+      total_messages
+      theme
+    }
+  }
+}`
+
+export const CHANGE_PASSWORD = gql`
+mutation ChangePassword($oldPassword: String!, $newPassword: String!) {
+  changePassword(oldPassword: $oldPassword, newPassword: $newPassword) {
+    user {
+      _id
     }
   }
 }`
@@ -36,14 +45,27 @@ export const ADD_CHAT_ROOM = gql`
 mutation AddChatRoom($name: String!) {
   addChatRoom(name: $name) {
     _id
-    name
+  }
+}`
+
+export const RENAME_CHAT_ROOM = gql`
+mutation RenameChatRoom($name: String!, $chatRoomId: ID!) {
+  renameChatRoom(name: $name, chatRoomId: $chatRoomId) {
+    _id
+  }
+}`
+
+export const DELETE_CHAT_ROOM = gql`
+mutation DeleteChatRoom($chatRoomId: ID!) {
+  deleteChatRoom(chatRoomId: $chatRoomId) {
+    _id
   }
 }`
 
 export const ADD_USER_TO_ROOM = gql`
-mutation AddUserToRoom($chatRoomId: ID!, $userId: String!) {
-  addUserToRoom(chatRoomId: $chatRoomId, user_id: $userId) {
-    name
+mutation AddUserToRoom($chatRoomId: ID!, $roomName: String!) {
+  addUserToRoom(chatRoomId: $chatRoomId, roomName: $roomName) {
+    _id
   }
 }`
 

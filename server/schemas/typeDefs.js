@@ -3,16 +3,20 @@ const typeDefs = `#graphql
     _id: ID
     username: String
     password: String
-    chat_rooms: [ChatRoom]
+    chat_rooms: [UserChatRooms]
     last_message_time: String
     total_messages: Int
     last_open_room: ChatRoom
     theme: String
   }
 
+  type UserChatRooms {
+    room_name: String
+    chat_room: String
+  }
+
   type ChatRoom {
     _id: ID
-    name: String
     users: [User]
     messages: [Message]
   }
@@ -49,9 +53,12 @@ const typeDefs = `#graphql
 
   type Mutation {
     createUser(username: String!, password: String!): Auth
+    changePassword(oldPassword: String!, newPassword: String!): Auth
     login(username: String!, password: String!): Auth
-    addUserToRoom(chatRoomId: ID!, user_id: String!): ChatRoom
+    addUserToRoom(chatRoomId: ID!, roomName: String!): ChatRoom
     addChatRoom(name: String!): ChatRoom
+    renameChatRoom(chatRoomId: ID!, name: String!): ChatRoom
+    deleteChatRoom(chatRoomId: ID!): ChatRoom
     postMessage(message_text: String!, chat_room: String!): Message
   }
 
