@@ -11,12 +11,16 @@ export default function ChatWindow(props) {
 
   useEffect ( () => {
     setMessagesArr ( props.messages.map ( (message, index) => {
+      // console.log(props.currentUser)
+      const leftOrRight = message?.user.username === props.currentUser ? 'right' : 'left';
+      // const leftOrRight = 'left';
       return (
         <MessageBubble 
           key = { index }
           username = { message?.user?.username ?? 'no user' }
           message = { message.message }
           status = { message.status }
+          side = { leftOrRight }
         />
       );
     }
@@ -27,30 +31,34 @@ export default function ChatWindow(props) {
     messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
   }, [messagesArr]);
 
+  function sendMessage(){
+    const user = {}
+    user.username = props.currentUser
+    const status = 'sent'
+
+    if (message !== '') {
+      props.sendFunction(message, user, status);
+      setMessage('');
+    }
+    sendBox.current.focus();
+  }
+
   const handleInput = (e) => {
     const username = 'ianm1837'
     const status = 'sent'
 
     setMessage(e.target.value);
-
-    console.log(e.target.id)
     
-    if (e.key === 'Enter' || e.button === 'send' && message !== '') {
-
-      props.sendFunction(message, username, status);
-      setMessage('');
+    if (e.key === 'Enter') {
+      sendMessage()
+      sendBox.current.focus();
     } 
   }
 
   const handleSend = (e) => {
     e.preventDefault();
-    const username = 'ianm1837'
-    const status = 'sent'
 
-    if (message !== '') {
-      props.sendFunction(message, username, status);
-      setMessage('');
-    }
+    sendMessage()
     sendBox.current.focus();
   }
 

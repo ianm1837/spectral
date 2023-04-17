@@ -8,9 +8,10 @@ import DrawerNavbar from '../components/drawer/DrawerNavbar';
 import RoomCard from '../components/drawer/RoomCard';
 import { useEffect, useState, useRef } from 'react';
 
-import { useQuery, useLazyQuery, useSubscription } from '@apollo/client';
+import { useQuery, useLazyQuery, useSubscription, useMutation } from '@apollo/client';
 import { ME, GET_CHAT_ROOM } from '../utils/queries';
 import { SUBSCRIBE_TO_ROOM } from '../utils/subscriptions';
+import { POST_MESSAGE } from '../utils/mutations';
 
 import avatarImage from '../images/placeholder.jpeg';
 
@@ -43,14 +44,38 @@ export default function Home(props) {
   
   // apollo queries
   const meObj = useQuery(ME);
-  const [getChatRoom, getChatRoomResult ] = useLazyQuery(GET_CHAT_ROOM, { variables: { chatRoomId: currentRoom }, fetchPolicy: 'network-only', nextFetchPolicy: 'network-only' });
-  const chatRoomSubscription = useSubscription(SUBSCRIBE_TO_ROOM, { variables: { chatRoom: currentRoom } });
+
+  const [getChatRoom, getChatRoomResult ] = useLazyQuery(GET_CHAT_ROOM,{ 
+    variables: { 
+      chatRoomId: currentRoom 
+    }, 
+    fetchPolicy: 'network-only', 
+    nextFetchPolicy: 'network-only' 
+    }
+  );
+
+  const chatRoomSubscription = useSubscription(SUBSCRIBE_TO_ROOM, { 
+    variables: { 
+      chatRoom: currentRoom 
+    }
+  });
+        
+  const [postMessage, postMessageResult] = useMutation(POST_MESSAGE, {
+    variables: { 
+      chatRoom: currentRoom 
+    }
+  });
   
 
   
   // monitor the subscription for new messages
   useEffect ( () => {
     if (!chatRoomSubscription.loading) {
+      if(chatRoomSubscription.data.subscribeToRoom.user.username === meObj.data.me.username) {
+        return;
+      }
+
+      console.log(chatRoomSubscription.data.subscribeToRoom)
       setMessages ( [...messages, chatRoomSubscription.data.subscribeToRoom] );
     }
   }, [chatRoomSubscription])
@@ -58,10 +83,9 @@ export default function Home(props) {
 
   
   // send new messages to the server
-  function handleSendMessage ( message, username, status ) {
-    setMessages ( [...messages, {message, username, status}] );
-
-
+  function handleSendMessage ( message, user, status ) {
+    setMessages ( [...messages, {message, user, status}] );
+    postMessage({ variables: { messageText: message, chatRoom: currentRoom } });
   }
   
 

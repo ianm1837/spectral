@@ -90,6 +90,7 @@ const resolvers = {
       // check if user has valid token (logged in)
       if (context.req.user) {
         // create new message
+        console.log("user: ", context.req.user)
         const newMessage = await Message.create({ 
           message: args.message_text, 
           user: context.req.user._id, 
@@ -110,7 +111,7 @@ const resolvers = {
             user: context.req.user, 
             created_at: newMessage.created_at 
           }})
-        return newMessage
+        return { _id: newMessage.id, message: args.message_text, user: context.req.user, created_at: newMessage.created_at}
       }
       // if user is not logged in, throw error
       throw new GraphQLError('Not logged in');
