@@ -10,13 +10,14 @@ export default function SettingsModal(props){
 
   const handleChangePassword = async () => {
     try {
-      const { data } = await changePassword({
+      await changePassword({
         variables: { oldPassword: oldPassword, newPassword: newPassword },
       })
       setOldPassword('')
       setNewPassword('')
     } catch (err) {
       console.error(err)
+      console.log(error)
     }
   }
 
@@ -41,7 +42,7 @@ export default function SettingsModal(props){
               <div className="modal-action">
                 <div className='flex w-full justify-between items-center'>
                   <label className='link link-secondary' htmlFor="settingsModal" >Cancel</label>
-                  <label htmlFor="settingsModal" className="btn">Save</label>
+                  <label htmlFor="settingsModal" onclick={handleChangePassword} className="btn">Save</label>
                 </div>
               </div>
             </div>

@@ -14,7 +14,7 @@ export default function ProfileButton(props) {
         <div className='dropdown dropdown-end'>
           <label tabIndex={0} className='btn btn-ghost btn-circle avatar'>
             <div className='w-9 rounded-full'>
-              <img src='placeholder.jpeg' />
+              <img alt="" src='placeholder.jpeg' />
             </div>
           </label>
           <ul
@@ -25,7 +25,7 @@ export default function ProfileButton(props) {
               <label htmlFor='settingsModal'>Settings</label>
             </li>
             <li>
-              <a onClick={handleLogout}>Logout</a>
+              <label onClick={handleLogout}>Logout</label>
             </li>
           </ul>
         </div>

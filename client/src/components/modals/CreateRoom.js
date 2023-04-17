@@ -10,13 +10,14 @@ export default function CreateRoomModal(props){
 
   const createRoom = async () => {
     try {
-      const { data } = await addChatRoom({
+      await addChatRoom({
         variables: { name: roomNameField },
       })
       props.setUpdateRoomStatus(!props.updateRoomStatus)
       setRoomNameField('')
     } catch (err) {
       console.error(err)
+      console.log(error)
     }
   }
 

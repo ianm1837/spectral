@@ -8,7 +8,7 @@ export default function MessageBubble(props) {
       <div className={`chat ${chatSide}`}>
           <div className="chat-image avatar">
             <div className="w-10 rounded-full">
-              <img src="placeholder.jpeg" />
+              <img alt='user avatar' src="placeholder.jpeg" />
             </div>
           </div>
           <div className="chat-header">

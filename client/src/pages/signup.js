@@ -5,7 +5,7 @@ import AuthService from '../utils/auth';
 
 
 export default function Login() {
-  const [createAccount, { data, loading, error }] = useMutation(ADD_USER);
+  const [createAccount, createAccountData] = useMutation(ADD_USER);
 
 
   const [usernameField, setUsernameField] = useState('');

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useMutation } from '@apollo/client'
-import { ADD_CHAT_ROOM, ADD_USER_TO_ROOM } from '../../utils/mutations'
+import { ADD_USER_TO_ROOM } from '../../utils/mutations'
 
 
 export default function JoinRoomModal(props){
@@ -13,13 +13,14 @@ export default function JoinRoomModal(props){
     if (roomId === '' || roomNameField === '') return alert('Please enter a room id and name.')
 
     try {
-      const { data } = await addUserToRoom({
+      await addUserToRoom({
         variables: { chatRoomId: roomId, roomName: roomNameField },
       })
       props.setUpdateRoomStatus(!props.updateRoomStatus)
       setRoomNameField('')
     } catch (err) {
       console.error(err)
+      console.log(error)
     }
   }
   

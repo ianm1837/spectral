@@ -3,7 +3,7 @@ import Home from "./pages/home";
 import Login from "./pages/login";
 import Signup from "./pages/signup";
 import { useState } from "react";
-import { Routes, Route, Outlet, Link, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import AuthService from './utils/auth';
 

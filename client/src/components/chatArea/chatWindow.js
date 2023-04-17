@@ -42,8 +42,6 @@ export default function ChatWindow(props) {
   }
 
   const handleInput = (e) => {
-    const username = 'ianm1837'
-    const status = 'sent'
 
     setMessage(e.target.value);
     

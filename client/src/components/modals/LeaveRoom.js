@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { DELETE_CHAT_ROOM } from '../../utils/mutations'
 
@@ -9,12 +8,13 @@ export default function LeaveRoomModal(props){
 
   const leaveRoom = async () => {
     try {
-      const { data } = await deleteChatRoom({
+      await deleteChatRoom({
         variables: { chatRoomId: props.roomName },
       })
       props.setUpdateRoomStatus(!props.updateRoomStatus)
     } catch (err) {
       console.error(err)
+      console.log(error)
     }
   }
 

@@ -6,9 +6,9 @@ export default function Navbar(props) {
       <div className="w-full flex justify-between navbar bg-base-300">
         <DrawerToggle />
         <div className="flex-1 px-2 mx-2 hidden lg:block ">
-          <a className="btn btn-ghost normal-case text-xl">
+          <label className="btn btn-ghost normal-case text-xl">
             {props.title}
-          </a>
+          </label>
         </div>
         {props.children}
       </div>

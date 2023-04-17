@@ -10,13 +10,14 @@ export default function RenameRoomModal(props){
 
   const renameRoom = async () => {
     try {
-      const { data } = await addChatRoom({
+      await addChatRoom({
         variables: { name: roomNameField, chatRoomId: props.roomName },
       })
       props.setUpdateRoomStatus(!props.updateRoomStatus)
       setRoomNameField('')
     } catch (err) {
       console.error(err)
+      console.log(error)
     }
   }
 

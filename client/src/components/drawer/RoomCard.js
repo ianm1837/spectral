@@ -10,7 +10,7 @@ export default function RoomCard(props) {
   }
 
   return (  
-    <a id={props.roomId} className="card w-auto m-3 mb-0 active:bg-base-100 btn-ghost bg-base-100 shadow-xl" onClick={props.handleClick}>
+    <label id={props.roomId} className="card w-auto m-3 mb-0 active:bg-base-100 btn-ghost bg-base-100 shadow-xl" onClick={props.handleClick}>
       <div className="card-body">
         <div className="flex flex-row items-center"> 
           <div className='w-12 '>
@@ -31,6 +31,6 @@ export default function RoomCard(props) {
         </div>
         </div>
       </div>
-    </a>
+    </label>
   );
 }

@@ -9,13 +9,12 @@ import RoomCard from '../components/drawer/RoomCard';
 import MessageOptions from '../components/navbar/messageOptions'
 import CreateRoomModal from '../components/modals/CreateRoom';
 import InviteUserModal from '../components/modals/InviteUser';
-import ProfileModal from '../components/modals/Profile';
 import SettingsModal from '../components/modals/Settings';
 import RenameRoomModal from '../components/modals/RenameRoom';
 import LeaveRoomModal from '../components/modals/LeaveRoom';
 import JoinRoomModal from '../components/modals/JoinRoom';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useQuery, useLazyQuery, useSubscription, useMutation } from '@apollo/client';
 import { ME, GET_CHAT_ROOM } from '../utils/queries';
@@ -39,8 +38,6 @@ export default function Home(props) {
   const toggleCheckbox = () => {
     setIsChecked(!isChecked);
   }
-  
-  
 
   // listen for the room to change and set the messages
   useEffect (() => {
