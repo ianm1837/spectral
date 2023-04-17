@@ -25,8 +25,8 @@ const typeDefs = `#graphql
 
   type Message {
     _id: ID
-    message_text: String
-    message_time: String
+    message: String
+    created_at: String
     user: User
   }
 

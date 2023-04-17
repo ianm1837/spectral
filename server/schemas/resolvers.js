@@ -33,10 +33,10 @@ const resolvers = {
       return await ChatRoom.find({}).populate('users')
     },
     getChatRoom: async (parent, { chatRoomId }) => {
-      const newData = await ChatRoom.findOne({ _id: chatRoomId }).populate('users').populate('messages')
-
-      console.log("newData", newData)
-      
+      const newData = await ChatRoom.findOne({ _id: chatRoomId })
+        .populate('messages')
+        .populate({ path: 'users', select: '_id username'})
+        .populate({ path: 'messages', populate: { path: 'user', model: 'User', select: '_id username' } })      
       return  { name: newData.name, users: newData.users, messages: newData.messages }
     },
   },
@@ -106,9 +106,9 @@ const resolvers = {
         pubsub.publish(args.chat_room, { 
           subscribeToRoom: { 
             _id: newMessage.id, 
-            message_text: args.message_text, 
+            message: args.message_text, 
             user: context.req.user, 
-            message_time: newMessage.created_at 
+            created_at: newMessage.created_at 
           }})
         return newMessage
       }

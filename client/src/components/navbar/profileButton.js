@@ -1,4 +1,14 @@
+import AuthServices from '../../utils/auth';
+
 export default function ProfileButton(props) {
+
+  function handleLogout() {
+    AuthServices.logout();
+  }
+
+
+
+
   return (
     <>
         <div className='dropdown dropdown-end'>
@@ -21,7 +31,7 @@ export default function ProfileButton(props) {
               <a>Settings</a>
             </li>
             <li>
-              <a>Logout</a>
+              <a onClick={handleLogout}>Logout</a>
             </li>
           </ul>
         </div>
