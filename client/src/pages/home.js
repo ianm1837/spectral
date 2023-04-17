@@ -1,4 +1,4 @@
-import ChatWindow from '../components/chatArea/ChatWindow';
+import ChatWindow from '../components/chatArea/chatWindow';
 import Navbar from '../components/navbar/navbar';
 import Drawer from '../components/drawer/Drawer';
 import DrawerContent from '../components/drawer/DrawerContent';
