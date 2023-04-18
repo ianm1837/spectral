@@ -4,6 +4,8 @@
 
 ## Description
 
+![CleanShot 2023-04-17 at 19 41 58](https://user-images.githubusercontent.com/65581204/232656788-7074fa60-1d73-4447-8dc3-f1a1eb5d4630.png)
+
 A messaging app that you can host how you want, where you want.
 
 ## Table of Contents
