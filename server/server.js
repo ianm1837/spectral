@@ -1,13 +1,18 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import mongoose from 'mongoose'
 dotenv.config()
+
 
 // node dependencies
 import path from 'path'
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // db connection
-import db from './config/connection.js'
+// import db from './config/connection.js'
 
 // my own dependencies
 import { typeDefs, resolvers } from './schemas/index.js'
@@ -72,6 +77,7 @@ const server = new ApolloServer({
 // start apollo server
 await server.start();
 
+
 // set cors options
 const corsOptions = {
   origin: '*', // update to match the domain you will make the request from
@@ -83,11 +89,11 @@ const corsOptions = {
 const PORT = process.env.PORT
 const env = process.env.NODE_ENV || 'development'
 
+// setup middleware
 // serve up static assets if in production
 if (env === 'production') {
   app.use(express.static(path.join(__dirname, '../client/build')))
 }  
-// setup middleware
 app.use(
   '/',
   bodyParser.urlencoded({ extended: false }),
@@ -102,10 +108,36 @@ app.use(
   }),
 );
 
-
 // connect to db and start listening for requests
-db.once('open', () => {
-  httpServer.listen(PORT, () => {
-    console.info(`Use GraphQL at http://localhost:${PORT}/graphql`);
-  })
-})
+
+let db = mongoose.connection;
+
+let httpServerStarted = false
+
+db.on('connecting', () => console.log('connecting to MongoDB...'));
+db.on('connected', () => {
+  console.log('connected to MongoDB')
+
+  try{
+    if(!httpServerStarted){
+      console.log("starting http server...")
+      httpServer.listen(PORT, () => {
+      httpServerStarted = true
+      console.info('success!')
+      console.info(`Use GraphQL at http://localhost:3001/graphql`);
+    })}
+  }
+  catch(err){
+    console.error("Error starting http server: ", err)
+  }
+
+});
+db.on('disconnecting', () => console.log('disconnecting from MongoDB...'));
+db.on('disconnected', () => console.log('disconnected from MongoDB'));
+db.on('reconnected', () => console.log('reconnected to MongoDB'));
+db.on('error', (err) => console.error('MongoDB connection error: ', err));
+
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).catch(err => console.log("Mongo connection error: ", err));

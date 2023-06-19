@@ -42,7 +42,7 @@ export default function SettingsModal(props){
               <div className="modal-action">
                 <div className='flex w-full justify-between items-center'>
                   <label className='link link-secondary' htmlFor="settingsModal" >Cancel</label>
-                  <label htmlFor="settingsModal" onclick={handleChangePassword} className="btn">Save</label>
+                  <label htmlFor="settingsModal" onClick={handleChangePassword} className="btn">Save</label>
                 </div>
               </div>
             </div>
