@@ -123,7 +123,7 @@ db.on('connected', () => {
       console.log("starting http server...")
       httpServer.listen(PORT, () => {
       httpServerStarted = true
-      console.info('success!')
+      console.info('done.')
       console.info(`Use GraphQL at http://localhost:3001/graphql`);
     })}
   }
