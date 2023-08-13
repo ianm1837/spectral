@@ -60,7 +60,7 @@ export default function ChatWindow(props) {
 
   return (
     <>
-      <div className={`pr-5 pl-5 grid grid-cols-1 grid-rows-1 w-full h-full bg-base-100 overflow-scroll`}>
+      <div className={`pr-5 pl-5 grid grid-cols-1 grid-rows-1 w-full h-full bg-base-100 overflow-y-auto`}>
         <div className="mt-auto w-full">
           {messagesArr}
         <div ref={messagesEndRef} />
