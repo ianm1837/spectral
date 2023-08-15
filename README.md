@@ -21,11 +21,16 @@ A messaging app that you can host how you want, where you want.
 
 ## Installation
 
-- Clone the repo
-- rename .env.EXAMPLE to .env and update the database url
-- run `npm install`
-- run `npm run build`
-- run `npm run start`
+- For docker:
+```
+docker compose up -d
+```
+
+- Setup MongoDB
+- rename .env.EXAMPLE in server directory to .env and update the MongooDB database url
+
+- Run the following in the root project directory
+- run `npm install && npm run build && npm run start`
 
 ## Usage
 
