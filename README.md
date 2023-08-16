@@ -21,10 +21,12 @@ A messaging app that you can host how you want, where you want.
 
 ## Installation
 
-- For docker:
+#### For docker:
 ```
 docker compose up -d
 ```
+
+#### To Run Locally without Docker:
 
 - Setup MongoDB
 - rename .env.EXAMPLE in server directory to .env and update the MongooDB database url
